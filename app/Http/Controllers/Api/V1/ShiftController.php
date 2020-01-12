@@ -77,7 +77,6 @@ class ShiftController extends Controller
             'shift_name'=>'required',
             'time_begin'=>'required|date_format:H:i',
             'time_end'=>'required|date_format:H:i',
-            'work_date'=>'required|date_format:d-m-Y',
         ]);
         if ($validator->fails()) {
             return $this->errorBadRequest($validator->messages()->toArray());
@@ -95,7 +94,6 @@ class ShiftController extends Controller
         $time_begin=$this->request->get('time_begin');
         $time_end=$this->request->get('time_end');
         //tao ngay lam
-        $work_date=$this->request->get('work_date');
 
         // Tạo shop trước
         $attributes = [
@@ -103,7 +101,6 @@ class ShiftController extends Controller
             'shop_id'=>$shop_id,
             'branch_id'=>$branch_id,
             'dep_id'=>$dep_id,
-            'work_date'=>$work_date,
             'time_begin'=>$time_begin,
             'time_end'=>$time_end,
         ];

@@ -22,8 +22,11 @@ class EmpshiftTransformer extends TransformerAbstract
     {
         
         return [
-            'user_id'=>$model->user_id,
-            'shift_id'=>$model->shift_id,
+            'work_date'=>$model->work_date,
+            'data'=>[                
+                'user_id'=>$model->user_id,
+                'shift_id'=>$model->shift_id,
+            ],
         ];
     }
 }

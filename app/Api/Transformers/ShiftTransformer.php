@@ -22,12 +22,9 @@ class ShiftTransformer extends TransformerAbstract
         $time_in=$model->time_begin;
         $time_out=$model->time_end;
         $time=$time_in.'-'.$time_out;
-        return [
-            'date'=> $model->work_date,
-            'data'=>[
+        return [ 
                 'name'=>$model->shift_name,
                 'time'=>$time,
-            ],
         ];
 
 

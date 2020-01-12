@@ -69,14 +69,24 @@ class EmpshiftController extends Controller
     #region nhan vien dang ky ca
     public function registerEF()
     {
+        // $test=Carbon::now();
+        // $t=$test->toDateString();
         // Validate Data import.
         $validator = \Validator::make($this->request->all(), [
             'user_id'=>'required',
             'shift_id'=>'required',
+            'work_date'=>'required|date_format:Y-m-d'
         ]);
         if ($validator->fails()) {
             return $this->errorBadRequest($validator->messages()->toArray());
         }
+        $work_date=$this->request->get('work_date');
+        // if($wd==$t){
+        //     dd('true');
+        // }
+        // else{
+        //     dd('false');
+        // }
 
         $user_id=$this->request->get('user_id');
         $shift_id=$this->request->get('shift_id');
@@ -91,6 +101,7 @@ class EmpshiftController extends Controller
         $attributes = [
             'user_id'=>$user_id,
             'shift_id'=>$shift_id,
+            'work_date'=>$work_date,
         ];
         $empShift = $this->empshiftRepository->create($attributes);
 

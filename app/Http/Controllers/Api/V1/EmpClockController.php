@@ -120,19 +120,26 @@ class EmpClockController extends Controller
 
     public function TimeIn()
     {
+        $time=Carbon::now('Asia/Ho_Chi_Minh');
+        //lay time de so sanh voi shift
+        $shift_time=$time->toDateString();
+        // dd($shift_time);
+        $time_check=$time->format('h:i');
 //        Log::debug('test0');
+        //kiem tra xem hom nay co phai la ngay cua ca lam ko
+        $shift_date=Empshift::where(['work_date'=>$shift_time])->first();
+        // dd($shift_date['shift_id']);
         $user=$this->user();
-        $shift_id=$this->request->get('shift_id');
+        $shift_id=$shift_date->shift_id;
+        //  dd($shift_id);
         //lay thong tin ca lam
         $shift_check=Shift::where(['_id'=>$shift_id])->first();
         $date=$shift_check->work_date;
         $shift_name=$shift_check->shift_name;
         $shift_time=($shift_check->time_begin).'-'.($shift_check->time_end);
 
-        // dd($shift_time);
         //Lấy thời gian lúc nhân viên bấm
-        $time=Carbon::now('Asia/Ho_Chi_Minh');
-        $time_check=$time->format('h:i');
+        
 //        $emp_clock=$this->empclockRepository->findWhere([
 //            'shift_id'=>mongo_id($shift_id),'user_id'=>mongo_id($user->_id)
 //        ])->first();
