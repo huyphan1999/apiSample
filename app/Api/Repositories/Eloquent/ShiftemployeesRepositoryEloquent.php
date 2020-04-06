@@ -2,17 +2,17 @@
 
 namespace App\Api\Repositories\Eloquent;
 
-use App\Api\Criteria\UserCriteria;
+use App\Api\Criteria\ShiftemployeeCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use App\Api\Repositories\Contracts\UserRepository;
-//use App\Api\Repositories\Contracts\userRepository;
-use App\Api\Entities\User;
-use App\Api\Validators\UserValidator;
+use App\Api\Repositories\Contracts\shiftemployeesRepository;
+use App\Api\Entities\Shiftemployees;
+use App\Api\Validators\ShiftemployeesValidator;
 
 /**
- * Class UserRepositoryEloquent
+ * Class ShiftemployeesRepositoryEloquent
  */
-class UserRepositoryEloquent extends BaseRepository implements UserRepository
+class ShiftemployeesRepositoryEloquent extends BaseRepository implements ShiftemployeesRepository
 {
     /**
      * Specify Model class name
@@ -21,7 +21,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function model()
     {
-        return User::class;
+        return Shiftemployees::class;
     }
 
     
@@ -33,9 +33,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     {
     }
 
-    public function getUser($params=[],$limit=0)
+    public function getShift($params=[],$limit=0)
     {
-        $this->pushCriteria(new UserCriteria($params));
+        $this->pushCriteria(new ShiftemployeeCriteria($params));
 
         if(!empty($params['is_detail']))
         {
@@ -44,6 +44,10 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         elseif (!empty($params['is_paginate']))
         {
             $item = $this->paginate();
+        }
+        elseif (!empty($params['is_history']))
+        {
+            $item = $this->findByField(['status'=>true,'user_id'=>mongo_id($params['user_id'])]);
         }
         else
         {

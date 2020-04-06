@@ -38,8 +38,9 @@ config([
 // phpunit
 $app->withFacades();
 //mail
-// class_alias('Jenssegers\Mongodb\Eloquent\Model', 'mail');
- $app->withEloquent();
+//class_alias('Jenssegers\Mongodb\Eloquent\Model', 'mail');
+//$app->register('Monoloquent\MongodbServiceProvider');
+// $app->withEloquent();
 
 $app->register('Moloquent\MongodbServiceProvider');
 $app->withEloquent();
@@ -61,7 +62,8 @@ $app->configure('queue');
 
 // App
 $app->configure('app');
-
+// Session
+$app->configure('session');
 
 //Timezone
 date_default_timezone_set('Asia/Ho_Chi_Minh');
@@ -100,12 +102,16 @@ $app->singleton(
 
 $app->middleware([
     App\Http\Middleware\Cors::class,
+//    \Illuminate\Session\Middleware\StartSession::class
 ]);
 
 $app->routeMiddleware([
+    'demo'=>\App\Http\Middleware\DemoMiddleware::class,
+    'demo2'=>\App\Http\Middleware\DemoMiddleware2::class,
     'auth' => App\Http\Middleware\Authenticate::class,
     'api.admin' => App\Http\Middleware\AdminMiddleware::class,
     'api.locale' => App\Http\Middleware\UserLocale::class,
+
 ]);
 
 /*
@@ -123,6 +129,8 @@ $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(App\Providers\RepositoryServiceProvider::class);
+//$app->register(Illuminate\Session\SessionServiceProvider::class);
+
 
 // Add extra commands for repository
 $app->register(App\Providers\CommandServiceProvider::class);
@@ -154,7 +162,10 @@ app('Dingo\Api\Auth\Auth')->extend('jwt', function ($app) {
 $app->singleton(Illuminate\Auth\AuthManager::class, function ($app) {
     return $app->make('auth');
 });
-
+// Bind the session
+//$app->bind(Illuminate\Session\SessionManager::class, function ($app) {
+//    return $app->make('session');
+//});
 
 //Database Table
 // $app->register(Yajra\DataTables\DataTablesServiceProvider::class);
@@ -171,9 +182,14 @@ $app->singleton(Illuminate\Auth\AuthManager::class, function ($app) {
 */
 
 $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
-    require __DIR__.'/../routes/user.php';
     require __DIR__.'/../routes/shop.php';
-    require __DIR__.'/../routes/student.php';
+    require __DIR__.'/../routes/branch.php';
+    require __DIR__.'/../routes/department.php';
+    require __DIR__.'/../routes/position.php';
+    require __DIR__.'/../routes/user.php';
+    require __DIR__.'/../routes/shift.php';
+    require __DIR__.'/../routes/shiftemployees.php';
 });
+
 
 return $app;

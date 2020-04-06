@@ -4,14 +4,14 @@ namespace App\Api\Repositories\Eloquent;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use App\Api\Repositories\Contracts\UserRepository;
-use App\Api\Repositories\Contracts\StudentRepository;
-use App\Api\Entities\Student;
-use App\Api\Validators\StudentValidator;
+use App\Api\Repositories\Contracts\positionRepository;
+use App\Api\Entities\Position;
+use App\Api\Validators\PositionValidator;
 
 /**
- * Class StudentRepositoryEloquent
+ * Class PositionRepositoryEloquent
  */
-class StudentRepositoryEloquent extends BaseRepository implements StudentRepository
+class PositionRepositoryEloquent extends BaseRepository implements PositionRepository
 {
     /**
      * Specify Model class name
@@ -20,7 +20,7 @@ class StudentRepositoryEloquent extends BaseRepository implements StudentReposit
      */
     public function model()
     {
-        return Student::class;
+        return Position::class;
     }
 
     

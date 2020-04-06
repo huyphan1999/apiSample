@@ -2,69 +2,41 @@
 
 namespace App\Api\Entities;
 
+use Illuminate\Http\Request;
 use Moloquent\Eloquent\Model as Moloquent;
 use App\Api\Transformers\ShopTransformer;
 use Moloquent\Eloquent\SoftDeletes;
-
-use App\Api\Entities\UserProvince;
-use App\Api\Entities\UserTown;
 
 class Shop extends Moloquent
 {
 	use SoftDeletes;
 
-	protected $collection = 'shops';
+	protected $collection = 'shop';
 
-    /**
-     * To make all fields fillable.
-     */
-    protected $guarded = array();
+    protected $fillable = ['shop_name','user_name','register_name','email','phone_number','branch_id'];
 
-    protected $hidden = ['updated_at','deleted_at'];
+    protected $hidden = ['created_at','updated_at','deleted_at'];
 
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
-        'start_package',
-        'end_package',
-        'last_activity'
+        'deleted_at'
     ];
 
-    public function transform(string $type = '')
+    public function transform()
     {
         $transformer = new ShopTransformer();
 
-        return $transformer->transform($this, $type);
+        return $transformer->transform($this);
     }
 
-    public function transformSelect()
+    public function branch()
     {
-        $transformer = new ShopTransformer();
-
-        return $transformer->transformSelect($this);
+        return Branch::where('shop_id',($this->_id))->first();
     }
 
-    
-
-    public function province()
+    public function getUser($username)
     {
-        $province =  UserProvince::where(['_id' => $this->province_id])->first();
-        if(!empty($province)) {
-            return $province->transform();
-        } else {
-            return [];
-        }
+        return User::where('full_name',$username)->first();
     }
-
-    public function town()
-    {
-        $town =  UserTown::where(['_id' => $this->town_id])->first();
-        if(!empty($town)) {
-            return $town->transform();
-        } else {
-            return [];
-        }
-    }
-
 }

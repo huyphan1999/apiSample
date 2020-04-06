@@ -2,17 +2,17 @@
 
 namespace App\Api\Repositories\Eloquent;
 
-use App\Api\Criteria\UserCriteria;
+use App\Api\Criteria\ShiftCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use App\Api\Repositories\Contracts\UserRepository;
-//use App\Api\Repositories\Contracts\userRepository;
-use App\Api\Entities\User;
-use App\Api\Validators\UserValidator;
+use App\Api\Repositories\Contracts\shiftRepository;
+use App\Api\Entities\Shift;
+use App\Api\Validators\ShiftValidator;
 
 /**
- * Class UserRepositoryEloquent
+ * Class ShiftRepositoryEloquent
  */
-class UserRepositoryEloquent extends BaseRepository implements UserRepository
+class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
 {
     /**
      * Specify Model class name
@@ -21,10 +21,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function model()
     {
-        return User::class;
+        return Shift::class;
     }
 
-    
 
     /**
      * Boot up the repository, pushing criteria
@@ -33,9 +32,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     {
     }
 
-    public function getUser($params=[],$limit=0)
+    public function getShift($params = [], $limit = 0)
     {
-        $this->pushCriteria(new UserCriteria($params));
+        $this->pushCriteria(new ShiftCriteria($params));
 
         if(!empty($params['is_detail']))
         {

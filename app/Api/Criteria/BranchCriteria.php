@@ -6,9 +6,9 @@ use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Repository\Contracts\RepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 /**
- * Class ShopCriteria
+ * Class BranchCriteria
  */
-class ShopCriteria implements CriteriaInterface
+class BranchCriteria implements CriteriaInterface
 {
     protected $params;
     public function __construct($params = [])
@@ -28,10 +28,10 @@ class ShopCriteria implements CriteriaInterface
     {
         $query = $model->newQuery();
 
-        if(!empty($this->params['branch_id']))
-        {
-            $query->where('branch_id',mongo_id($this->params['branch_id']));
-        }
+        //Set language
+        // $query->where('lang',app('translator')->getLocale());
+
+        $query->where('shop_id',mongo_id(Auth::getPayload()->get('shop_id')));
         
         return $query;
     }

@@ -15,24 +15,18 @@
 // });
 
 $api = app('Dingo\Api\Routing\Router');
-use App\Http\Middleware\DemoMiddleware;
+
 // v1 version API
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1'], function ($api) {
     $api->group(['middleware' => ['api.locale']], function ($api) {
-        $api->get('user/get-user',[
-            'uses'=>'UserController@list',
+        $api->get('position/view-list',[
+            'uses'=>'PositionController@getListPosition'
         ]);
-        $api->post('user/login',[
-           'uses'=>'UserController@login'
+        $api->post('position/create',[
+            'uses'=>'PositionController@create'
         ]);
-        $api->post('user/register',[
-           'uses'=>'UserController@register'
-        ]);
-        $api->post('user/update',[
-            'uses'=>'UserController@update'
-        ]);
-        $api->post('user/delete',[
-            'uses'=>'UserController@delete'
+        $api->post('position/delete',[
+            'uses'=>'PositionController@delete'
         ]);
     });
 });

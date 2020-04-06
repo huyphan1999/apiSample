@@ -9,10 +9,13 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         $models = array(
-            'User',
             'Shop',
-            'Role',
-            'Student'
+            'Branch',
+            'Dept',
+            'Position',
+            'User',
+            'Shift',
+            'Shiftemployees',
         );
 
         foreach ($models as $model) {

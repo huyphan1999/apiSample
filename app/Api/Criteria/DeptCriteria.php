@@ -6,9 +6,9 @@ use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Repository\Contracts\RepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 /**
- * Class UserCriteria
+ * Class DeptCriteria
  */
-class UserCriteria implements CriteriaInterface
+class DeptCriteria implements CriteriaInterface
 {
     protected $params;
     public function __construct($params = [])
@@ -28,22 +28,11 @@ class UserCriteria implements CriteriaInterface
     {
         $query = $model->newQuery();
 
-        if(!empty($this->params['branch_name']))
+        if(!empty($this->params['address']))
         {
-            $query->where('branch_name',mongo_id($this->params['branch_name']))->get();
+            $query->where('address',mongo_id($this->params['address']));
         }
-        if(!empty($this->params['dept_name']))
-        {
-            $query->where('dept_name',$this->params['dept_name'])->get();
-        }
-        if(!empty($this->params['shop_name']))
-        {
-            $query->where('shop_name',$this->params['shop_name'])->get();
-        }
-        if(!empty($this->params['position_name']))
-        {
-            $query->where('position_name',$this->params['position_name'])->get();
-        }
+        
         return $query;
     }
 }

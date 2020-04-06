@@ -4,7 +4,6 @@ namespace App\Api\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use App\Api\Entities\Shop;
-use Carbon\Carbon;
 
 /**
  * Class ShopTransformer
@@ -18,11 +17,15 @@ class ShopTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform(Shop $model, string $type = ''){
-        $data = [
-            'id' => $model->_id,
-            'name' => $model->name,
+    public function transform(Shop $model)
+    {
+        return [
+            'id'         => $model->_id,
+
+            
+
+            'created_at' => $model->created_at,
+            'updated_at' => $model->updated_at
         ];
-        return $data;
     }
 }

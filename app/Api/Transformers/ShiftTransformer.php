@@ -3,21 +3,21 @@
 namespace App\Api\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use App\Api\Entities\User;
+use App\Api\Entities\Shift;
 
 /**
- * Class UserTransformer
+ * Class ShiftTransformer
  */
-class UserTransformer extends TransformerAbstract
+class ShiftTransformer extends TransformerAbstract
 {
 
     /**
-     * Transform the \User entity
-     * @param \User $model
+     * Transform the \Shift entity
+     * @param \Shift $model
      *
      * @return array
      */
-    public function transform(User $model)
+    public function transform(Shift $model)
     {
         return [
             'id'         => $model->_id,

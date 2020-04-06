@@ -5,9 +5,9 @@ namespace App\Api\Repositories\Contracts;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface StudentRepository
+ * Interface PositionRepository
  */
-interface StudentRepository extends RepositoryInterface
+interface PositionRepository extends RepositoryInterface
 {
     
 }

@@ -2,77 +2,51 @@
 
 namespace App\Api\Entities;
 
-use App\Api\Transformers\UserTransformer;
-use Gma\Acl\Traits\GmaUserTrait;
-use Dingo\Api\Http\Request;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
 use Moloquent\Eloquent\Model as Moloquent;
+use App\Api\Transformers\UserTransformer;
 use Moloquent\Eloquent\SoftDeletes;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Api\Entities\Organization;
-use Illuminate\Support\Facades\Auth;
-use App\Api\Entities\Shop;
 
-class User extends Moloquent implements AuthenticatableContract, JWTSubject
+class User extends Moloquent
 {
-    use Authenticatable, GmaUserTrait, SoftDeletes;
-    protected $collection = 'users';
+	use SoftDeletes;
 
-    /**
-     * To make all fields fillable.
-     */
-    protected $guarded = array();
+	protected $collection = 'user';
 
-    protected $hidden = ['services', 'actived_date', 'register_ip', 'visited_date', 'visited_ip'];
+    protected $fillable = ['full_name','email','phone_number','branch_name','dept_name','position_name','shop_name'];
+
+    protected $hidden = ['created_at','updated_at','deleted_at'];
 
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
-        'visited_date',
-        'birthday',
-        'labour_end_date',
-        'working_date',
-        'identify_date',
-        'passport_date',
-        'passport_expiry_date',
-        'finish_date',
-        'from_date',
-        'to_date',
-        'health_last_date',
-        '_updatedAt',
+        'deleted_at'
     ];
 
-    public static function getPublicField(){
-        //return $this->fillable;
-    }
-    // jwt implementation
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    // jwt implementation
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
-
-    public function transform($type = '')
+    public function transform()
     {
         $transformer = new UserTransformer();
 
-        return $transformer->transform($this, $type);
+        return $transformer->transform($this);
     }
 
-    public function shop() {
-        $shop = null;
-        if(!empty($this->shop_id)) {
-            $shop = Shop::where(['_id' => mongo_id($this->shop_id)])->first();
-        }
-        return $shop;
+    public function branch($branch_id='')
+    {
+        return Branch::where('_id',mongo_id($branch_id))->first()->_id;
+    }
+    public function dept($dept_id='')
+    {
+        return Dept::where('_id',mongo_id($dept_id))->first()->_id;
+    }
+    public function shop($shop_id='')
+    {
+        return Shop::where('_id',mongo_id($shop_id))->first()->_id;
+    }
+    public function loginShop($shop_name='')
+    {
+        return Shop::where('shop_name',$shop_name)->first()->_id;
+    }
+    public function position($position_id='')
+    {
+        return Position::where('_id',mongo_id($position_id))->first()->_id;
     }
 }

@@ -3,21 +3,21 @@
 namespace App\Api\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use App\Api\Entities\User;
+use App\Api\Entities\Branch;
 
 /**
- * Class UserTransformer
+ * Class BranchTransformer
  */
-class UserTransformer extends TransformerAbstract
+class BranchTransformer extends TransformerAbstract
 {
 
     /**
-     * Transform the \User entity
-     * @param \User $model
+     * Transform the \Branch entity
+     * @param \Branch $model
      *
      * @return array
      */
-    public function transform(User $model)
+    public function transform(Branch $model)
     {
         return [
             'id'         => $model->_id,

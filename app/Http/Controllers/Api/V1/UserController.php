@@ -1,214 +1,241 @@
 <?php
-
 namespace App\Http\Controllers\Api\V1;
 
 use App\Api\Entities\User;
-
 use App\Api\Repositories\Contracts\UserRepository;
-use App\Api\Repositories\Contracts\ShopRepository;
-
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Auth\AuthManager;
 
 class UserController extends Controller
 {
-    /**
-     * @var UserRepository
-     */
-    protected $userRepository;
-
-    /**
-     * @var ShopRepository
-     */
-    protected $shopRepository;
-
     protected $request;
 
-    protected $auth;
+    protected $userRepository;
 
-    public function __construct(
-                                UserRepository $userRepository,
-                                ShopRepository $shopRepository,
-                                AuthManager $auth,
-                                Request $request) {
-        $this->userRepository = $userRepository;
-        $this->shopRepository = $shopRepository;
-        $this->request = $request;
-        $this->auth = $auth;
-        
-        parent::__construct();
+    public function __construct(Request $request,UserRepository $userRepository)
+    {
+        $this->request=$request;
+        $this->userRepository=$userRepository;
     }
 
-    /**
-     * @api {get} /user 1. Current user info
-     * @apiDescription (current user info)
-     * @apiGroup user
-     * @apiPermission JWT
-     * @apiVersion 0.1.0
-     * @apiSuccessExample {json} Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-                "error_code": 0,
-                "message": [
-                    "Successfully"
-                ],
-                "data": {
-                    "id": "d8Wn2WmmjKnBtMRED",
-                    "name": "Trung Hà",
-                    "username": "+84909224002",
-                    "email": "+84909224002@argi.com",
-                    "phone": "+84909224002",
-                    "phone_code": "84",
-                    "is_supplier": 0,
-                    "brandRepresent": "1",
-                    "company": [
-                        {
-                            "name": "name",
-                            "label": "Name",
-                            "value": "GMA"
-                        },
-                    ]
-                }
-            }
-     */
-    public function userShow()
+    public function getAllUser()
     {
-        $user = $this->user();
-        $data = $user->transform('with-shop');
-        
-        //Save history login
-        $date = Carbon::now();
-        $user->visited_date = $date;
-        $user->vistied_ip = get_client_ip();
-        $user->save();
-        return $this->successRequest($data);
+        $user = $this->userRepository->all();
+        return $user;
     }
 
-    /**
-     * @api {post}/user/update 2. update my info
-     * @apiDescription Update my info
-     * @apiGroup user
-     * @apiPermission JWT
-     * @apiVersion 0.1.0
-     * @apiParam {String} [name] name
-     * @apiParam {String} [email] name
-     * @apiParam {Object} [company] company[phone], company[address]...
-     * @apiSuccessExample {json} Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-                "error_code": 0,
-                "message": [
-                    "Successfully"
-                ],
-                "data": {
-                    "id": "p5jFuwDbo84KteeCc",
-                    "name": "Trung Hà",
-                    "username": "+84909224002",
-                    "phone": "+84909224002",
-                    "phone_code": "84",
-                    "company": {
-                        "phone": "0909090909",
-                        "address": "Bùi Hữu Nghĩa, Bình Thạnh"
-                    },
-                    "is_supplier": 0
-                }
-            }
-     */
-    public function update(Request $request)
+    public function register()
     {
-      // Send email when user register supplier
-      // $params = ['email' => 'onclick.trungha@gmail.com',
-      //            'full_name' => 'Trung Hà',
-      //            'subject' => 'Đăng ký làm đại lý trên FAMA'];
-      // var_dump($this->userRepository->sendMailActiveSupplier($params));return;
+        $validator = \Validator::make($this->request->all(),[
+           'full_name'=>'string|required',
+           'email'=>'required|email|unique:user',
+            'phone_number'=>'string|required|unique:user',
+            'branch_name'=>'string|required',
+            'dept_name'=>'string|required',
+            'position_name'=>'string|required',
+            'shop_name'=>'string',
+        ]);
 
-        $entityUser = new User;
-        $fillableList = $entityUser->getFillable();
+        if($validator->fails())
+        {
+            return $this->errorBadRequest($validator->messages()->toArray());
+        }
 
-        $userId = $this->user->id;
-        $user = $this->userRepository->findByField('_id',$userId)->first();
-        
-        foreach($fillableList as $key => $value){
-            if($value == 'company'){
-                if(!empty($this->request->get('company'))){
-                  if(empty($user->company)){
-                        $user->company = $this->request->get('company');
-                    } else {
-                        $company = $user->company;
-                        foreach($this->request->get('company') as $k => $v){
-                            $company[$k] = $v;
-                        }
-                        $user->company = $company;
-                    }
-                }
-                
-            } elseif ($value == 'email') {
-                if(!empty($this->request->get('email'))) {
-                    $emails = $user->emails;
-                    $emails[0]['address'] = $this->request->get('email');
-                    $user->emails = $emails;
-                }
+        $elementExist = new User();
+
+        $full_name = $this->request->get('full_name');
+        $email = $this->request->get('email');
+        $phone_number = $this->request->get('phone_number');
+        $branch_name = $elementExist->branch(mongo_id($this->request->get('branch_name')));
+        $dept_name = $elementExist->dept(mongo_id($this->request->get('dept_name')));
+        $position_name = $elementExist->position(mongo_id($this->request->get('position_name')));
+        $shop_name = $elementExist->shop(mongo_id($this->request->get('shop_name')));
+
+        if(empty($branch_name))
+        {
+            return $this->errorBadRequest('Chi nhánh không tồn tại');
+        }
+        if(empty($dept_name))
+        {
+            return $this->errorBadRequest('Phòng ban không tồn tại');
+        }
+        if(empty($shop_name))
+        {
+            return $this->errorBadRequest('Cửa hàng không tồn tại');
+        }
+        if(empty($position_name))
+        {
+            return $this->errorBadRequest('Chức danh không tồn tại');
+        }
+
+        $attributes = [
+            'full_name'=>$full_name,
+            'email'=>$email,
+            'phone_number'=>$phone_number,
+            'branch_name'=>$branch_name,
+            'dept_name'=>$dept_name,
+            'position_name'=>$position_name,
+            'shop_name'=>$shop_name,
+        ];
+
+        $user = $this->userRepository->create($attributes);
+        return $this->successRequest($user);
+    }
+
+    public function update()
+    {
+        $validator = \Validator::make($this->request->all(),[
+            'full_name'=>'string|required',
+            'email'=>'required|email',
+            'phone_number'=>'string|required',
+            'branch_name'=>'string|required',
+            'dept_name'=>'string|required',
+            'position_name'=>'string|required',
+            'shop_name'=>'required',
+        ]);
+
+        if($validator->fails())
+        {
+            return $this->errorBadRequest($validator->messages()->toArray());
+        }
+
+        $full_name = $this->request->get('full_name');
+        $email = $this->request->get('email');
+        $phone_number = $this->request->get('phone_number');
+
+        $userExist = $this->userRepository->findByField('full_name',$full_name)->first();
+
+        if(!empty($userExist))
+        {
+            $branch_name = $userExist->branch(mongo_id($this->request->get('branch_name')));
+            $dept_name = $userExist->dept(mongo_id($this->request->get('dept_name')));
+            $position_name = $userExist->position(mongo_id($this->request->get('position_name')));
+
+            $shop_name = $userExist->shop(mongo_id($this->request->get('shop_name')));
+
+
+            if(empty($branch_name))
+            {
+                return $this->errorBadRequest('Chi nhánh không tồn tại');
             }
-            else {
-                if(!empty($this->request->get($value)) || ($this->request->get($value) == 0 && $value != 'emails')){
-                    $user->$value = $this->request->get($value);
-                }
+            if(empty($dept_name))
+            {
+                return $this->errorBadRequest('Phòng ban không tồn tại');
+            }
+            if(empty($shop_name))
+            {
+                return $this->errorBadRequest('Cửa hàng không tồn tại');
+            }
+            if(empty($position_name))
+            {
+                return $this->errorBadRequest('Chức danh không tồn tại');
+            }
+
+            $attributes = [
+                'email'=>$email,
+                'phone_number'=>$phone_number,
+                'branch_name'=>$branch_name,
+                'dept_name'=>$dept_name,
+                'position_name'=>$position_name,
+                'shop_name'=>$shop_name,
+            ];
+
+            $user = $this->userRepository->update($attributes,$userExist->_id);
+            return $this->successRequest($user);
+        }
+        return $this->errorBadRequest('Lỗi');
+    }
+
+    public function delete()
+    {
+        $validator = \Validator::make($this->request->all(),[
+            'full_name'=>'string|required',
+        ]);
+
+        if($validator->fails())
+        {
+            return $this->errorBadRequest($validator->messages()->toArray());
+        }
+
+        $full_name = $this->request->get('full_name');
+        $userExist = $this->userRepository->findByField('full_name',$full_name)->first();
+
+        if(!empty($userExist))
+        {
+            $userExist->forceDelete();
+            return $this->successRequest('Xóa thành công');
+        }
+        return $this->errorBadRequest('Lỗi');
+    }
+
+    public function login()
+    {
+//        $value = $this->request->session()->get('shop_name', function() {
+//            return 'shop_name';
+//        });
+        $validator = \Validator::make($this->request->all(),[
+            'shop_name'=>'required',
+            'phone_number'=>'required'
+        ]);
+
+        if($validator->fails())
+        {
+            return $this->errorBadRequest($validator->messages()->toArray());
+        }
+        $user = new User();
+        $shopName = $user->loginShop($this->request->get('shop_name'));
+        $checkShopName = $this->userRepository->findByField('shop_name',mongo_id($shopName));
+
+        $phone_number = $this->request->get('phone_number');
+
+        if(!isset($checkShopName))
+        {
+            return $this->errorBadRequest('User name không tồn tại');
+        }
+
+        foreach($checkShopName as $item)
+        {
+            if($item->phone_number == $phone_number)
+            {
+                //return $item->branch_name;
+                $this->request->session()->put([
+                    'shop_name'=>$this->request->get('shop_name'),
+                    'phone_number'=>$this->request->get('phone_number')
+                ]);
+                return $this->successRequest($item);
             }
         }
-        $user->save();
-        return $this->successRequest($user->transform());
+
+        return $this->errorBadRequest('Sai mật khẩu');
     }
 
-    /**
-     * @api {GET} /user/info/{username} 3. User Info
-     * @apiDescription Get user info
-     * @apiGroup user
-     * @apiPermission JWT
-     * @apiVersion 0.1.0
-     * @apiParam {String} username  username's user
-     * @apiSuccessExample {json} Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *      "error_code": 0,
-                "message": [
-                    "Successfully"
-                ],
-                "data": [
-                    {
-                        "id": "oGpZf8tSv3FNLHZv4",
-                        "name": "saritvn",
-                        "username": "saritvn",
-                        "phone": "0909224002",
-                        "phone_code": "84",
-                        "company": {
-                            "name": "Green Mobile App",
-                            "address": "195 Dien Bien Phu, Ward 15, Binh Thanh Distric, Ho Chi Minh City",
-                            "email": "trung.ha@greenapp.vn",
-                            "phone": "0909224002",
-                            "field": "Mobile App"
-                        }
-                    }
-                ]
-     *     }
-     */
+    public function list()
+    {
+        $validator = \Validator::make($this->request->all(),[
+            'branch_name'=>'string|nullable',
+            'dept_name'=>'string|nullable',
+            'position_name'=>'string|nullable',
+            'shop_name'=>'string|nullable'
+        ]);
 
-    public function info(Request $request,$username){
-        // Validate HEADER import.
-        // $validator = \Validator::make($request->all(), [
-        //     'username'   => 'required',
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->errorBadRequest($validator->messages()->toArray());
-        // }
-
-        $user = $this->userRepository->findByField('username',$username)->first();
-        if(empty($user)){
-            return $this->successRequest([]);
+        if($validator->fails())
+        {
+            return $this->errorBadRequest($validator->messages()->toArray());
         }
-        $data = $user->transform();
-        return $this->successRequest($data);
+
+        $branch_name = $this->request->get('branch_name');
+        $dept_name = $this->request->get('dept_name');
+        $position_name = $this->request->get('position_name');
+        $shop_name = $this->request->get('shop_name');
+
+        $params = [
+            'branch_name'=>$branch_name,
+            'dept_name'=>$dept_name,
+            'position_name'=>$position_name,
+            'shop_name'=>$shop_name
+        ];
+
+        $user = $this->userRepository->getUser($params);
+        return $user;
     }
 }

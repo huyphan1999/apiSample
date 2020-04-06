@@ -2,17 +2,17 @@
 
 namespace App\Api\Repositories\Eloquent;
 
-use App\Api\Criteria\UserCriteria;
+use App\Api\Criteria\DeptCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use App\Api\Repositories\Contracts\UserRepository;
-//use App\Api\Repositories\Contracts\userRepository;
-use App\Api\Entities\User;
-use App\Api\Validators\UserValidator;
+use App\Api\Repositories\Contracts\deptRepository;
+use App\Api\Entities\Dept;
+use App\Api\Validators\DeptValidator;
 
 /**
- * Class UserRepositoryEloquent
+ * Class DeptRepositoryEloquent
  */
-class UserRepositoryEloquent extends BaseRepository implements UserRepository
+class DeptRepositoryEloquent extends BaseRepository implements DeptRepository
 {
     /**
      * Specify Model class name
@@ -21,7 +21,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function model()
     {
-        return User::class;
+        return Dept::class;
     }
 
     
@@ -33,9 +33,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     {
     }
 
-    public function getUser($params=[],$limit=0)
+    public function getDept($params=[],$limit = 0)
     {
-        $this->pushCriteria(new UserCriteria($params));
+        $this->pushCriteria(new DeptCriteria($params));
 
         if(!empty($params['is_detail']))
         {
@@ -50,6 +50,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $item = $this->all();
         }
 
+        $this->popCriteria(new DeptCriteria($params));
         return $item;
     }
 }

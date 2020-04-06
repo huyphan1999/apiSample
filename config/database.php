@@ -2,25 +2,26 @@
 
 return  [
 
-    'default' => 'mysql',
+    'default' => 'mongodb',
 
     'connections' => [
-        'mysql' => [
-            'driver' => 'mysql',
+        'mongodb' => [
+            'driver' => 'mongodb',
             'dump_command_path' => '/opt/lampp/bin', // only the path, so without 'mysqldump' or 'pg_dump'
             'dump_command_timeout' => 60 * 5, // 5 minute timeout
             'dump_using_single_transaction' => true, // perform dump using a single transaction
+            'connection' => env('DB_CONNECTION','mongodb'),
             'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'lumen_demo'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'port' => env('DB_PORT', '27017'),
+            'database' => env('DB_DATABASE', 'tancaapp'),
+//            'username' => env('DB_USERNAME', 'cokhanh'),
+//            'password' => env('DB_PASSWORD', '1'),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix' => '',
             'strict' => true,
             'engine' => null,
-            'name' => 'mysql'
+            'name' => 'mongodb'
         ],
     ],
     'migrations' => 'migrations',

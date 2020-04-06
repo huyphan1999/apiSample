@@ -15,24 +15,27 @@
 // });
 
 $api = app('Dingo\Api\Routing\Router');
-use App\Http\Middleware\DemoMiddleware;
+
 // v1 version API
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1'], function ($api) {
     $api->group(['middleware' => ['api.locale']], function ($api) {
-        $api->get('user/get-user',[
-            'uses'=>'UserController@list',
+        $api->get('shift/get-employees-shift',[
+            'uses'=>'ShiftEmployeesController@getEmployeesShift'
         ]);
-        $api->post('user/login',[
-           'uses'=>'UserController@login'
+        $api->get('shift/filter-shift',[
+            'uses'=>'ShiftEmployeesController@list'
         ]);
-        $api->post('user/register',[
-           'uses'=>'UserController@register'
+        $api->post('shift/register-shift',[
+            'uses'=>'ShiftEmployeesController@registerShift'
         ]);
-        $api->post('user/update',[
-            'uses'=>'UserController@update'
+        $api->post('shift/check-in',[
+           'uses'=>'ShiftEmployeesController@checkIn'
         ]);
-        $api->post('user/delete',[
-            'uses'=>'UserController@delete'
+        $api->post('shift/check-out',[
+            'uses'=>'ShiftEmployeesController@checkOut'
+        ]);
+        $api->post('shift/confirm',[
+            'uses'=>'ShiftEmployeesController@confirmShift'
         ]);
     });
 });

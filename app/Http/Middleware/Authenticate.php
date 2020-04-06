@@ -35,9 +35,15 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if ($this->auth->guard($guard)->guest()) {
+        $user = Auth::user();
+        $position = $user->position();
+        if($position->value != 'manager')
+        {
             return response(['message'=>'Unauthorized.','status_code'=>401], 401);
         }
+//        if ($this->auth->guard($guard)->guest()) {
+//
+//        }
 
         return $next($request);
     }

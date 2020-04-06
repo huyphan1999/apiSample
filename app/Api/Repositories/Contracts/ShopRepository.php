@@ -3,7 +3,6 @@
 namespace App\Api\Repositories\Contracts;
 
 use Prettus\Repository\Contracts\RepositoryInterface;
-use App\Api\Entities\Shop;
 
 /**
  * Interface ShopRepository

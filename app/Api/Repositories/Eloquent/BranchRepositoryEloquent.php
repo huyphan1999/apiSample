@@ -2,17 +2,17 @@
 
 namespace App\Api\Repositories\Eloquent;
 
-use App\Api\Criteria\UserCriteria;
+use App\Api\Criteria\BranchCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use App\Api\Repositories\Contracts\UserRepository;
-//use App\Api\Repositories\Contracts\userRepository;
-use App\Api\Entities\User;
-use App\Api\Validators\UserValidator;
+use App\Api\Repositories\Contracts\branchRepository;
+use App\Api\Entities\Branch;
+use App\Api\Validators\BranchValidator;
 
 /**
- * Class UserRepositoryEloquent
+ * Class BranchRepositoryEloquent
  */
-class UserRepositoryEloquent extends BaseRepository implements UserRepository
+class BranchRepositoryEloquent extends BaseRepository implements BranchRepository
 {
     /**
      * Specify Model class name
@@ -21,7 +21,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function model()
     {
-        return User::class;
+        return Branch::class;
     }
 
     
@@ -33,13 +33,11 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     {
     }
 
-    public function getUser($params=[],$limit=0)
+    public function getBranch($params=[],$limit=0)
     {
-        $this->pushCriteria(new UserCriteria($params));
-
-        if(!empty($params['is_detail']))
+        if(!empty($params['is_active']))
         {
-            $item = $this->get()->first();
+            $item = $this->findByField('active',true);
         }
         elseif (!empty($params['is_paginate']))
         {

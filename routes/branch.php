@@ -19,26 +19,17 @@ $api = app('Dingo\Api\Routing\Router');
 // v1 version API
 $api->version('v1', ['namespace' => 'App\Http\Controllers\Api\V1'], function ($api) {
     $api->group(['middleware' => ['api.locale']], function ($api) {
-        //Login
-        $api->get('students/view-list', [
-            'as' => 'student.viewList',
-            'uses' => 'StudentController@viewList',
+        $api->get('branch/get-list',[
+            'uses'=>'BranchController@list'
         ]);
-
-        $api->get('students/create-form', [
-            'as' => 'student.viewCreateFormGet',
-            'uses' => 'StudentController@viewCreateForm',
+        $api->post('branch/create',[
+            'uses'=>'BranchController@create'
         ]);
-
-        $api->get('students/delete', [
-            'as' => 'student.delete',
-            'uses' => 'StudentController@delete',
+        $api->post('branch/update',[
+            'uses'=>'BranchController@update'
         ]);
-
-        $api->post('students/create-form', [
-            'as' => 'student.viewCreateFormPost',
-            'uses' => 'StudentController@viewCreateForm',
+        $api->post('branch/delete',[
+            'uses'=>'BranchController@delete'
         ]);
-
     });
 });
